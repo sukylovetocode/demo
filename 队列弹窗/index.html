@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .pop_mask{
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom:0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+        }
+        .pop_inner{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            background: #fff;
+            color: red;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pop_mask">
+        <div class="pop_inner"></div>
+    </div>
+    
+
+<script>
+    function Queue(){
+        this.store = []
+    }
+
+    Queue.prototype.front = function(){
+        return this.store[0]
+    }
+
+    Queue.prototype.enqueue = function(data){
+        this.store.push(data)
+    }
+
+    Queue.prototype.dequeue = function(){
+        this.store.shift()
+    }
+
+    Queue.prototype.back = function(){
+        return this.store[this.store.length - 1]
+    }
+
+    Queue.prototype.isEmpty = function(){
+        if(this.store.length === 0){
+            return true
+        }else{
+            return false
+        }
+    }
+
+    let queue = new Queue()
+
+    const push = (event,...args) => {
+        if(queue.isEmpty()){
+            queue.enqueue({func:event,args:args})
+            openDialog()
+        }else{
+            queue.enqueue({func:event,args:args})
+        }
+    }
+
+    const openDialog = () => {
+        if(!queue.isEmpty()){
+            queue.front().func(...queue.front().args)
+        }
+    }
+
+    const closeDialog = () => {
+        queue.dequeue()
+        openDialog()
+    }
+
+    const dialog1 = (name,num) => {
+        console.log(name)
+        document.querySelector('.pop_inner').innerHTML = '这是第一个弹窗'
+        document.querySelector('.pop_mask').style.display = 'block'
+    }
+
+    const dialog2 = () => {
+        document.querySelector('.pop_inner').innerHTML = '这是第二个弹窗'
+        document.querySelector('.pop_mask').style.display = 'block'
+    }
+
+    const dialog3 = () => {
+        document.querySelector('.pop_inner').innerHTML = '这是第三个弹窗'
+        document.querySelector('.pop_mask').style.display = 'block'
+    }
+
+    document.querySelector('.pop_mask').addEventListener('click',function(e){
+        document.querySelector('.pop_mask').style.display = 'none'
+        closeDialog()
+    })
+
+    setTimeout(() =>{
+        push(dialog1,'name','123')
+        push(dialog2)
+        push(dialog3)
+    },1000)
+
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九宫格抽奖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        ul {
+            width: 314px;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+        }
+
+        li {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            text-align: center;
+            background: chocolate;
+            margin: 2px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        li.active::after{
+            content: '';
+            border: 3px solid red;
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            left: 0;
+            top: 0;
+            box-sizing: border-box;
+        }
+
+        li:nth-child(5){
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="lottery" id="lottery">
+        <li class="active">1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>点击抽奖</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+        <li>9</li>
+    </ul>
+
+    <script>
+        var lottery = {
+            speed: 0, // 转圈的速度
+            count: 0, // 转动圈数
+            doms: null, // 操作节点
+            index: 0,
+            nowIndex: 0,
+            init: function(id, speed=100, count=10){
+                this.speed = speed;
+                this.count = count;
+                let container = document.getElementById(id);
+                this.doms = container.getElementsByTagName('li');
+                this.doms[4].addEventListener('click', function(e){
+                    lottery.getPos(6);
+                    lottery.roll();
+                });
+            },
+            getPos: function ($index) {
+                this.index = $index
+            },
+            roll: function () {
+                var timer = setTimeout(() => {
+                    // remove all active class
+                    for (var j = 0; j < 9; j++) {
+                        this.doms[j].classList.remove('active')
+                    }
+                    this.doms[this.nowIndex].classList.add("active")
+                    this.nowIndex++
+                    if (this.nowIndex === 4) { // 跳过中间
+                        this.nowIndex++
+                    }
+                    if (this.nowIndex === 9) { // 返回第一格
+                        this.nowIndex = 0
+                        this.count--  // 计算转圈次数
+                    }
+                    if (this.count < 1 || this.speed >= 800) { // 减速
+                        this.speed += 100
+                    }
+                    if (this.count === 0 && this.index === this.nowIndex) {
+                        // step 4 : 最后一圈进行旋转时判断落地位置
+                        clearTimeout(timer)
+                    } else {
+                        this.roll()
+                    }
+                }, this.speed);
+            }
+        }
+        lottery.init('lottery');
+    </script>
+</body>
+
+</html>

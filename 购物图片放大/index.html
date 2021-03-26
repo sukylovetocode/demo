@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淘宝图片放大</title>
+    <style>
+        .box{
+            width: 300px;
+            position: relative;
+        }
+        .small{
+            width: 300px;
+            position: relative;
+        }
+        .small img{
+            width: 100%;
+        }
+        .big{
+            width: 600px;
+            height: 480px;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            left: 360px;
+            background: red;
+            /* display: none; */
+        }
+        .big img{
+            width: 1000px;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .mask{
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.3);
+            cursor: pointer;
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+   <div class="box">
+       <div class="small">
+           <img src="./images/photo-1606248627653-f3d6b573deb8.jpg" alt="">
+           <div class="mask"></div>
+       </div>
+       <div class="big">
+           <img src="./images/photo-1606248627653-f3d6b573deb8.jpg" alt="">
+       </div>
+   </div>
+
+
+    <script src="../library/jquery-3.5.1.js"></script>
+    <script>
+        window.onload = function(){
+            $('.box').on('mouseover',function(){
+                console.log('鼠标移进');
+                $('.big').show();
+                $('.mask').show();
+            });
+            $('.box').on('mouseout',function(){
+                console.log('鼠标移出');
+                $('.big').hide();
+                $('.mask').hide();
+            });
+            $('.box').on('mousemove',function(e){
+                /* 本质上 计算鼠标在小图里面位移的距离，并通过比例计算出大图中我们需要位移的距离 */
+               /* 1 获取当前鼠标的位置 */
+               let mouseX = e.clientX;
+               let mouseY = e.clientY;
+               /* 2 容器左侧与顶部的偏离 */
+               let offsetLeft = $('.box').offset().left;
+               let offsetTop = $('.box').offset().top;
+               /* 3 放大罩层大小 */
+               let maskWid = $('.mask').width();
+               let maskHei = $(".mask").height();
+               /* 4 遮罩位置 */
+               let maskX = mouseX - offsetLeft  - maskWid / 2;
+               let maskY = mouseY - offsetTop - maskHei / 2;
+               /* 5 限制遮罩范围 */
+               if(maskX < 0){
+                    maskX = 0;
+               }
+               if(maskX >= $('.small').width() - maskWid){
+                    maskX = $('.small').width() - maskWid
+               }
+               if(maskY < 0){
+                    maskY = 0;
+               }
+               if(maskY >= $('.small').height() - maskHei){
+                    maskY = $('.small').height() - maskHei
+               }
+               /* 6 放大比例 */
+               let times = ($('.big img').width() - $('.big').width()) / ($('.small').width() - maskWid);
+               let _y = maskY * times;
+               let _x = maskX * times;
+
+               $('.mask').css('left', maskX + 'px');
+               $('.mask').css('top', maskY + 'px');
+               $('.big img').css('left', -_x + 'px');
+               $('.big img').css('top', -_y + 'px');
+               console.log(_y,_x)
+            });
+        }
+    </script>
+</body>
+</html>

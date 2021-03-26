@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #wrapper{
+            display: flex;
+        }
+        .pagi_item{
+            padding: 10px;
+            border: 1px solid #999;
+        }
+        .active{
+            background: blue;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="wrapper"></div>
+    
+    <script src="./pagination.js"></script>
+    <script>
+        new Pagination({
+            pageSize: 8,
+            totalPage: 200
+        })
+    </script>
+</body>
+</html>

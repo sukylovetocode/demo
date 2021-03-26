@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九宫格抽奖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        ul {
+            width: 314px;
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+        }
+
+        li {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            text-align: center;
+            background: chocolate;
+            margin: 2px;
+            box-sizing: border-box;
+        }
+
+        li.active {
+            border: 3px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="lottery">
+        <li class="active">1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>点击抽奖</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+        <li>9</li>
+    </ul>
+
+    <script>
+        var liDOMs = document.querySelectorAll('li')
+        var count = 10 //转动的圈数
+        var speed = 100 //转圈的速度
+        var i = 0 // 现在的位置
+        // step 3:生成中奖位置
+        var index = Math.floor(Math.random() * 9)
+        console.log(index)
+        function roll() {
+
+            // step 1 : 实现简单的循环旋转
+            // setTimeout(() => {
+            //     for (var j = 0; j < 9; j++) {
+            //         liDOMs[j].classList.remove('active')
+            //     }
+            //     liDOMs[i].classList.add("active")
+            //     i++
+            //     if (i === 4) {
+            //         i++
+            //     }
+            //     if (i === 9) {
+            //         i = 0
+            //     }
+            //     roll()
+            // }, speed)
+
+            // step 2 : 实现有快有慢的旋转
+            var timer = setTimeout(() => {
+                for (var j = 0; j < 9; j++) {
+                    liDOMs[j].classList.remove('active')
+                }
+                liDOMs[i].classList.add("active")
+                i++
+                if (i === 4) {
+                    i++
+                }
+                if (i === 9) {
+                    i = 0
+                    count--  // 计算转圈次数
+                }
+                if (count < 2 || speed >= 800) {
+                    speed += 100
+                }
+                if (count === 0 && index === i) {
+                    // step 4 : 最后一圈进行旋转时判断落地位置
+                    clearTimeout(timer)
+                } else {
+                    roll()
+                }
+            }, speed)
+
+
+            // step 2 : 生成定时器进行位移
+            // while(count > 0){
+            //     setTimeout(roll, speed)
+            //     if(count < 3){
+            //         speed += 200
+            //     }
+            // }
+        }
+        roll()
+    </script>
+</body>
+
+</html>
