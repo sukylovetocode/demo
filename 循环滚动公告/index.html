@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>循环滚动公告</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .scrollOuter {
+        font-size: 20px;
+      }
+    </style>
+    <script>
+      (function (doc, win) {
+        var docEl = doc.documentElement,
+          resizeEvt =
+            "orientationchange" in window ? "orientationchange" : "resize",
+          recalc = function () {
+            var clientWidth = docEl.clientWidth;
+            //(clientWidth>640) && (clientWidth=640);
+            if (!clientWidth) return;
+            docEl.style.fontSize = 100 * (clientWidth / 640) + "px";
+          };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener("DOMContentLoaded", recalc, false);
+      })(document, window);
+    </script>
+  </head>
+  <body>
+    <div class="scrollOuter"></div>
+
+    <script src="./index.js"></script>
+  </body>
+</html>

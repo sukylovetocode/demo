@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成带中间logo的二维码</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #erCode{
+            position: relative;
+            width: 2rem;
+        }
+        .bg{
+            width: 4rem;
+            background: #282828;
+        }
+    </style>
+    <script>
+        
+
+	(function (doc, win) {
+
+var docEl = doc.documentElement,
+    resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+    recalc = function () {
+        var clientWidth = docEl.clientWidth;
+        //(clientWidth>640) && (clientWidth=640);
+        if (!clientWidth) return;
+        docEl.style.fontSize = 100 * (clientWidth / 640) + 'px';
+
+    };
+
+    if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+
+
+    })(document, window);
+    </script>
+</head>
+<body>
+
+    <div class="bg">
+        <div id="erCode"></div>
+    </div>
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="./es6-promise.js"></script>
+    <script src="./canvas2image.js"></script>
+    <script src="./html2canvas.min.js"></script>
+    <script src="../../library/qrcode.min.js"></script>
+    <script src="./index.js"></script>
+</body>
+</html>
