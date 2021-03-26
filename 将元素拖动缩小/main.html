@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元素拖动缩小</title>
+   <style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    html, body{
+        background: #e9d7df;
+    }
+    #box{
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: #fff;
+    }
+    #box1{
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: red;
+        top: 300px;
+        left: 600px;
+    }
+    .components-edit-shape.active{
+        outline: 1px dashed #25a589;
+     }
+     .components-edit-shape:hover{
+        outline: 1px dashed #25a589;
+    }
+    .components-edit-shape.active .edit_shape{
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        position: absolute;
+        background: #fff;
+        border: 1px solid #59c7f9;
+        z-index: 1001;
+        cursor: move;
+    }
+    .components-edit-shape:hover .edit_shape{
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        position: absolute;
+        background: #fff;
+        border: 1px solid #59c7f9;
+        z-index: 1001;
+        cursor: move;
+    }
+    .lt{
+        left: -5px;
+        top: -5px;
+    }
+    .lm{
+        left: -5px;
+        top: 50%;
+        transform: translateY(-5px);
+    }
+    .lb{
+        left: -5px;
+        bottom: -5px;
+    }
+    .mt{
+        left:50%;
+        transform: translateX(-5px);
+        top: -5px;
+    }
+    .mb{
+        left:50%;
+        transform: translateX(-5px);
+        bottom: -5px;
+    }
+    .rt{
+        right: -5px;
+        top: -5px;
+    }
+    .rm{
+        right: -5px;
+        top: 50%;
+        transform: translateY(-5px);
+    }
+    .rb{
+        right: -5px;
+        bottom: -5px;
+    }
+   </style>
+</head>
+<body>
+    <div id="box" class="components-edit-shape"></div>
+
+    <div id="box1" class="components-edit-shape"></div>
+    
+    <script>
+        class Element{
+            constructor(DOM){
+                this.id = DOM
+                this.element = document.getElementById(DOM);
+                this.posList = ['lt', 'lm', 'lb', 'mt', 'mb', 'rt', 'rm', 'rb'];
+                this.active = false;
+            }
+            init(){
+               document.addEventListener('click', e => {
+                    if(e.target.id === this.id){
+                        this.active = true;
+                        if(!this.element.children[0]){
+                            // 生成开始的几个点
+                            this.posList.map(item => {
+                                let dom = document.createElement('div')
+                                dom.classList.add('edit_shape')
+                                dom.classList.add(item)
+                                this.element.append(dom)
+                            });
+                            this.drag()
+                            this.resize()
+                        }
+                    }else{
+                        this.active = false;
+                        while(this.element.hasChildNodes()) //当div下还存在子节点时 循环继续
+                        {
+                            this.element.removeChild(this.element.firstChild);
+                        }
+
+                    }
+               }); 
+            }
+            drag(){
+                this.element.addEventListener('mousedown',e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    let startX = e.clientX
+                    let startY = e.clientY
+                    let startLeft = this.element.offsetLeft
+                    let startTop = this.element.offsetTop
+
+                    let move = e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        let diffX = e.clientX - startX + startLeft
+                        let diffY = e.clientY - startY + startTop
+
+                        this.element.style.left = diffX + 'px'
+                        this.element.style.top = diffY + 'px'
+                    }
+
+                    let up = e => {
+                        e.stopPropagation()
+                        e.preventDefault()
+
+                        document.removeEventListener('mousemove', move, true)
+                        document.removeEventListener('mouseup', up, true)
+                    }
+
+                    document.addEventListener('mousemove', move, true)
+                    document.addEventListener('mouseup', up, true)
+                });
+            }
+            resize(){
+                this.posList.map(item => {
+                    document.querySelector('.'+item).addEventListener('mousedown', e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        let startX = e.clientX
+                        let startY = e.clientY
+                        let startWid = this.element.offsetWidth
+                        let startHei = this.element.offsetHeight
+
+                        let move = e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        let diffWid = e.clientX - startX + startWid
+                        let diffHei = e.clientY - startY + startHei
+
+                        this.element.style.width = diffWid + 'px'
+                        this.element.style.height = diffHei + 'px'
+                    }
+
+                    let up = e => {
+                        e.stopPropagation()
+                        e.preventDefault()
+
+                        document.removeEventListener('mousemove', move, true)
+                        document.removeEventListener('mouseup', up, true)
+                    }
+
+                    document.addEventListener('mousemove', move, true)
+                    document.addEventListener('mouseup', up, true)
+                        
+                    });
+                })    
+            }
+        }
+        let a = new Element('box');
+        a.init();
+        let b = new Element('box1');
+        b.init();
+    </script>
+</body>
+</html>

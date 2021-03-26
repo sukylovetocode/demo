@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>将元素拖动缩小</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html, body{
+            background: #e9d7df;
+        }
+        #box{
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: #fff;
+        }
+        .components_shape:active{
+            outline: 1px dashed #25a589;
+        }
+        .components_shape:hover{
+            outline: 1px dashed #25a589;
+        }
+        .components_shape:active .edit_shape{
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #59c7f9;
+            z-index: 1001;
+            cursor: move;
+        }
+        .components_shape:hover .edit_shape{
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #59c7f9;
+            z-index: 1001;
+            cursor: move;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="components_shape" id="box">
+        <div class="lt edit_shape"></div>
+        <div class="lm edit_shape"></div>
+        <div class="lb edit_shape"></div>
+        <div class="mt edit_shape"></div>
+        <div class="mb edit_shape"></div>
+        <div class="rt edit_shape"></div>
+        <div class="rm edit_shape"></div>
+        <div class="rb edit_shape"></div>
+    </div>
+    
+    <script>
+        // 整一个编辑得边框
+        function getPoints(){
+            let posList = ['lt', 'lm', 'lb', 'mt', 'mb', 'rt', 'rm', 'rb'];
+            document.querySelector('.lt').style.left =  - 5 + 'px'
+            document.querySelector('.lt').style.top =  - 5 + 'px'
+            document.querySelector('.lm').style.left = -5 + 'px'
+            document.querySelector('.lm').style.top = (box.offsetHeight /2 - 5) + 'px'
+            document.querySelector('.lb').style.left =  - 5+ 'px'
+            document.querySelector('.lb').style.top =  (box.offsetHeight  - 5)+ 'px'
+            document.querySelector('.mt').style.left =  (box.offsetWidth /2 - 5) + 'px'
+            document.querySelector('.mt').style.top =   - 5+ 'px'
+            document.querySelector('.mb').style.left = (box.offsetWidth / 2  - 5)+ 'px'
+            document.querySelector('.mb').style.top =  (box.offsetHeight  - 5)+ 'px'
+            document.querySelector('.rt').style.left = (box.offsetWidth  - 5)+ 'px'
+            document.querySelector('.rt').style.top =   - 5 + 'px'
+            document.querySelector('.rm').style.left = (box.offsetWidth  - 5)+ 'px'
+            document.querySelector('.rm').style.top =  (box.offsetHeight / 2  - 5)+ 'px'
+            document.querySelector('.rb').style.left = (box.offsetWidth  - 5)+ 'px'
+            document.querySelector('.rb').style.top =  (box.offsetHeight  - 5)+ 'px'
+        }
+        // 将物体随意拖拽
+        let box = document.getElementById('box');
+        getPoints();
+        box.addEventListener('mousedown', function(e){
+            e.stopPropagation()
+            e.preventDefault();
+            let startX = e.clientX 
+            let startY = e.clientY
+            let startLeft = box.offsetLeft
+            let startTop = box.offsetTop
+            console.log(startX, startY)
+
+            let move = e => {
+                // 阻止冒泡事件
+                e.stopPropagation()
+                e.preventDefault();
+                let diffX = e.clientX - startX + startLeft
+                let diffY = e.clientY - startY + startTop
+                box.style.left = diffX + 'px'
+                box.style.top = diffY + 'px'
+            };
+
+            let up = e => {
+                getPoints();
+                document.removeEventListener('mousemove', move, true);
+                document.removeEventListener('mouseup', up, true);
+            };
+
+            document.addEventListener('mousemove', move, true);
+            document.addEventListener('mouseup', up, true);
+        });
+        
+
+          // 将物体随意缩放
+        let pos = document.getElementsByClassName('edit_shape');
+        for(let i=0; i<pos.length;i++){
+            pos[i].addEventListener('mousedown', function(e){
+                console.log(pos[i]);
+                e.stopPropagation()
+                e.preventDefault();
+                    
+                let startX = e.clientX 
+                let startY = e.clientY
+                let width = box.offsetWidth
+                let height = box.offsetHeight
+
+                let move = e => {
+                    // 阻止冒泡事件
+                    e.stopPropagation()
+                    e.preventDefault();
+                    let diffWid = e.clientX - startX + width
+                    let diffHei = e.clientY - startY + height
+                    box.style.width = diffWid + 'px'
+                    box.style.height = diffHei + 'px'
+                    getPoints();
+                };
+
+                let up = e => {
+                    document.removeEventListener('mousemove', move, true);
+                    document.removeEventListener('mouseup', up, true);
+                };
+
+                document.addEventListener('mousemove', move, true);
+                document.addEventListener('mouseup', up, true);
+            });
+        }
+    </script>
+</body>
+</html>
