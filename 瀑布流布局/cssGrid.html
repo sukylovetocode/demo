@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cssGrid属性</title>
+    <style>
+        .masonry {
+            width: 1000px;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            /*分为3行*/
+            grid-template-columns: 1fr 1fr 1fr;
+            /*分为3列*/
+            column-gap: 5px;
+            /*列间距5px*/
+        }
+
+        .masonry .item img {
+            width: 100%;
+        }
+
+        .masonry .title {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="masonry">
+        <div class="item">
+            <img src="./image/pic1.jpg" />
+            <span class="title">today</span>
+        </div>
+        <div class="item">
+            <img src="./image/pic2.jpg" />
+            <span class="title">tomorrow</span>
+        </div>
+        <div class="item">
+            <img src="./image/pic3.jpg" />
+            <span class="title">tomorrow</span>
+        </div>
+        <div class="item">
+            <img src="./image/pic1.jpg" />
+            <span class="title">today</span>
+        </div>
+        <div class="item">
+            <img src="./image/pic2.jpg" />
+            <span class="title">tomorrow</span>
+        </div>
+        <div class="item">
+            <img src="./image/pic3.jpg" />
+            <span class="title">tomorrow</span>
+        </div>
+        <!-- more items-->
+    </div>
+</body>
+
+</html>

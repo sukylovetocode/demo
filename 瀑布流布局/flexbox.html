@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexBox实现瀑布流</title>
+    <style>
+        .masonry {
+            display: flex;
+            flex-direction: row;
+            /*设置为水平方向*/
+            width: 800px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            /*设置为竖直方向*/
+            margin: 20px;
+        }
+
+        .masonry .column .item img {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="masonry">
+        <!-- 第一列 -->
+        <div class="column">
+            <div class="item">
+                <img src="./image/pic1.jpg" />
+                <img src="./image/pic3.jpg" />
+                <img src="./image/pic1.jpg" />
+            </div>
+            <!-- more items-->
+        </div>
+        <!-- 第二列 -->
+        <div class="column">
+            <div class="item">
+                <img src="./image/pic2.jpg" />
+                <img src="./image/pic1.jpg" />
+                <img src="./image/pic1.jpg" />
+            </div>
+            <!-- more items-->
+        </div>
+        <!-- 第三列 -->
+        <div class="column">
+            <div class="item">
+                <img src="./image/pic3.jpg" />
+                <img src="./image/pic1.jpg" />
+                <img src="./image/pic2.jpg" />
+            </div>
+            <!-- more items-->
+        </div>
+    </div>
+
+
+    <script>
+
+    </script>
+</body>
+
+</html>

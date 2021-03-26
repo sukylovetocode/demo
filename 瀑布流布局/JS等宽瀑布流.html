@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JS等宽瀑布流</title>
+    <style>
+        #box div {
+            position: absolute;
+        }
+
+        img {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box"></div>
+
+    <script type="text/javascript">
+        // 公共可变的值
+        var config = {
+            _img_width: 250,
+            _container: 'box',
+            _width: getClient().width
+        }
+
+        function masonry(config) {
+            // 得到我们的外部容器
+            var container = document.getElementById(config._container)
+            var child = container.children
+
+            // 计算我们页面的列数
+            var columns = Math.floor(config._width / config._img_width)
+
+            // 计算图片之间的间隔
+            var gap = Math.floor((config._width - config._img_width * columns) / (columns + 1))
+
+            // 储存每行的高度
+            var arr = []
+            for (var i = 0; i < child.length; i++) {
+                if (i < columns) {
+                    child[i].style.top = 0
+                    child[i].style.left = gap + (config._img_width + gap) * i + 'px'
+                    arr.push(child[i].offsetHeight) // offsetHeight 在面对图片未加载完成的时候进行取值，得到的是0
+                } else {
+                    // 找到最小高度的列
+                    var minHei = arr[0]
+                    var index = 0
+                    for(var j=0;j<arr.length;j++){
+                        if(minHei > arr[j]){
+                            minHei = arr[j]
+                            index = j
+                        }
+                    }
+                    // 排入新的图片
+                    child[i].style.top = arr[index] + 10 + 'px'
+                    child[i].style.left = gap + (config._img_width + gap) * index + 'px'
+
+                    arr[index] = arr[index] + child[i].offsetHeight + gap
+                }
+            }
+        }
+
+        function getPic() {
+            // data loaded
+            for (let i = 0; i < 30; i++) {
+                var div = document.createElement('div')
+                var img = document.createElement('img')
+                img.src = './image/pic' + (i % 3 + 1) + '.jpg'
+                img.style.width = config._img_width + 'px'
+                div.appendChild(img)
+                document.getElementById(config._container).appendChild(div)
+            }
+        }
+
+        function getClient() {
+            return {
+                width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+            }
+        }
+
+        getPic()
+        window.onload = function(){
+            masonry(config)
+        }
+        // masonry(config)
+    </script>
+</body>
+
+</html>

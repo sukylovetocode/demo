@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏整页滚动</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        #wrap {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #main {
+            position: relative;
+            top: 0;
+        }
+
+        #page1 {
+            width: 100%;
+            background: #522def;
+        }
+
+        #page2 {
+            width: 100%;
+            background: #522d8f;
+        }
+
+        #page3 {
+            width: 100%;
+            background: #452def;
+        }
+
+        #page4 {
+            width: 100%;
+            background: #5652ef;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+        <div id="main">
+            <div id="page1" class="page"></div>
+            <div id="page2" class="page"></div>
+            <div id="page3" class="page"></div>
+            <div id="page4" class="page"></div>
+        </div>
+    </div>
+
+    <script src="../library/jquery-3.5.1.js"></script>
+    <script>
+
+        var scrollHei = $(window).height()
+        var pageNum = $('.page').length
+        $('#main').css('height', pageNum * scrollHei + 'px')
+        $('.page').css('height', scrollHei + 'px')
+
+        var isScroll = false, nowPage = 1
+        $(window).on('mousewheel', function (e) {
+            var delta = e.originalEvent.wheelDelta
+            console.log(delta)
+
+            // 延时处理
+            if (!isScroll) {
+                isScroll = true
+
+                //处理逻辑
+                if (delta > 0) {
+                    // up
+                    if (nowPage > 1) {
+                        nowPage -= 1
+                    }
+                    $('#main').animate({ top: -(nowPage - 1) * scrollHei + 'px' }, 1000)
+                } else {
+                    //down
+                    if (nowPage < pageNum) {
+                        nowPage += 1
+                    }
+                    $('#main').animate({ top: -(nowPage - 1) * scrollHei + 'px' }, 1000)
+                    console.log((nowPage - 1) * scrollHei)
+                }
+                // 定时重新开始
+                setTimeout(() => {
+                    isScroll = false
+                }, 1000)
+            }
+
+        })
+    </script>
+</body>
+
+</html>
