@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接东西小游戏</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"/>
+
+    
+    <script>
+        /*
+        * 参考链接：
+        “等一下，我碰！”——常见的2D碰撞检测
+        https://aotu.io/notes/2017/02/16/2d-collision-detection/index.html
+        JavaScript移动端 缩放 位移 touch 事件
+        https://blog.csdn.net/bianliuzhu/article/details/80623825?utm_source=blogkpcl4&utm_medium=distribute.pc_relevant_bbs_down.none-task-blog-baidujs-1.nonecase&depth_1-utm_source=distribute.pc_relevant_bbs_down.none-task-blog-baidujs-1.nonecase
+        基于Canvas的js简单版接元宝游戏
+        https://blog.csdn.net/luqiren/article/details/82783001
+        */
+
+        /* 工具函数 */
+        function Random(min, max) {
+            return Math.round(Math.random() * (max - min)) + min;
+        }
+
+        /* 全局变量 */
+        var charac = new People();  /* 生成我们的小人 */
+        var score = new Score();
+         /* 画布初始化 */
+        var canvas;
+        var ctx;
+        var cacheCanvas;
+        var cacheCtx;
+        var addTime = 0;
+        var arr = [];/* 存放游戏物体 Array */
+        var CHARAC_WID = 50;
+        var BOMB_WID = 20;
+        var PEACH_WID = 20;
+
+        /* 物品类 */
+        /* 基类:GameObject */
+        function GameObject(x, y, speed){
+            this.x = x;
+            this.y = y;
+            this.speed = speed;
+            this.isLive = true;
+            this.needToClear = false;
+        }
+        /* 小人 继承自 GameObject */
+        function People(){
+            this.gameObject = GameObject;
+            this.gameObject(Random(20,450),700,2);
+            /* 自动绑定拖动事件 */
+            this.isTouch = false;
+        }
+        People.prototype.move = function(num){
+            this.x =  num;
+            if(this.x < 5){
+                this.x = 5;
+            }
+            if(this.x > 480){
+                this.x = 480;
+            }
+        } 
+        People.prototype.addTouchEvent = function(){
+            document.addEventListener("touchstart", function (e) {
+                //表示手指已按下  
+                this.isTouch = true;
+            }, false);
+        
+            //监听 touchmove 事件 手指 移动时 做的事情
+            document.addEventListener("touchmove", function (e) {
+                // 一根 手指 执行 目标元素移动 操作
+                if (e.touches.length == 1 && this.isTouch) {
+                    //移动目标的 X Y 坐标
+                    var touchMoveX = e.targetTouches[0].pageX;
+                    charac.move(touchMoveX);
+                };
+            }, false);
+        
+            //监听 手指离开屏幕时 
+            document.addEventListener("touchend", function (e) {
+                //将 isTouch 修改为false  表示 手指已经离开屏幕
+                if (this.isTouch) {this.isTouch = false;}
+            }, false);
+        }
+
+        /* 桃子 继承自 GameObject */
+        function Peach(x){
+            this.gameObject = GameObject;
+            this.gameObject(Random(20,450),0,2);
+        }
+
+        Peach.prototype.update = function(){
+             /* y超过800，准备清理 */
+            if(this.y > 800) {
+                this.needToClear = true;
+            }
+             /* 被碰撞 改变生命状态 */
+             if(this.isCatch() && this.isLive){
+                this.isLive = false;
+                score.add(2);
+            }
+            /* 根据生命状态进行绘制 */
+           if(this.isLive){
+                cacheCtx.fillStyle = "#fff";
+                this.y += 2;
+                cacheCtx.fillRect(this.x,this.y,20,20);
+           }else{
+               this.needToClear = true;
+               return
+           }
+        }
+
+        Peach.prototype.isCatch = function(){
+            return (this.x < CHARAC_WID + charac.x && this.x + PEACH_WID > charac.x && this.y < charac.y + CHARAC_WID && this.y + PEACH_WID > charac.y)
+        }
+
+        Peach.prototype.canRemove = function(){
+            return this.needToClear;
+        }
+
+        /* 炸弹 继承自 GameObject */
+        function Bomb(){
+            this.gameObject = GameObject;
+            this.gameObject(Random(20,450),0,2);
+            this.animate = 10;
+        }
+
+        Bomb.prototype.update = function(){
+            /* y超过800，准备清理 */
+            if(this.y > 800) {
+                this.needToClear = true;
+            }
+            /* 被碰撞 改变生命状态 */
+            if(this.isCatch() && this.isLive){
+                this.isLive = false;
+                score.minus(3);  
+            }
+            /* 根据生命状态进行绘制 */
+           if(this.isLive){
+                cacheCtx.fillStyle = "#eb8876";
+                this.y += 2;
+                cacheCtx.fillRect(this.x,this.y,BOMB_WID,BOMB_WID);
+           }else{
+               if(this.animate){
+                    cacheCtx.fillStyle = "#ed3376";
+                    cacheCtx.fillRect(this.x,this.y,20,20);
+               }else{
+                    this.needToClear = true;
+                    return
+               }
+               this.animate --;
+           }
+        }
+
+        Bomb.prototype.isCatch = function(){
+            return (this.x < CHARAC_WID + charac.x && this.x + BOMB_WID > charac.x && this.y < charac.y + CHARAC_WID && this.y + BOMB_WID > charac.y) 
+        }
+
+        Bomb.prototype.canRemove = function(){
+            return this.needToClear;
+        }
+
+        function init(){
+            /* 设置画布 */
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            let wid = document.documentElement.offsetWidth;
+            canvas.width = wid;
+            canvas.height = 800;
+
+            /* 复制画布 */
+            cacheCanvas = cache();
+            cacheCtx = cacheCanvas.getContext("2d");
+
+            
+            // 检测ctx 能否用来绘图
+            if(canvas.getContext){
+                console.log('你的浏览器支持canvas');
+            }else{
+                console.log('你的浏览器不支持canvas');
+            }
+            /* 添加人物点击事件*/
+            charac.addTouchEvent();
+            // 进入游戏逻辑
+            game();
+        }
+        /* 物品打开定时器，随机生成 */
+        function objRandomCreate(){
+            let randomNum = Math.random();
+            if(randomNum > 0.7){
+                return new Bomb();
+            }else{
+               return new Peach();
+            }
+        }
+        /* 游戏逻辑 */
+        function game(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(cacheCanvas,0,0,canvas.width,canvas.height);
+
+            cacheCtx.fillStyle = "#ebebeb";
+            cacheCtx.fillRect(0,0,cacheCanvas.width,cacheCanvas.height);
+
+            /* 生成接住的物品 */
+            if(addTime > 60){
+                 /* 定时清除无用的对象*/
+                 arr.map((item,index) => {
+                    if(item.canRemove()){
+                        arr.splice(index,1);
+                    }
+                });
+                arr.push(objRandomCreate());
+                addTime = 0;
+            }
+            addTime += 1;
+
+            /* 绘制人物 */
+            cacheCtx.fillStyle = "#982678";
+            cacheCtx.fillRect(charac.x,charac.y,CHARAC_WID,CHARAC_WID);
+
+            /* 物品更新 */
+            arr.map((item,index) => {
+                item.update();
+            });
+
+            /* 统计分数 */
+            ctx.fillText(score.getValue(),20,30);
+
+            /* 更新我们的canvas */
+            window.requestAnimFrame(game);
+        }
+
+        function Score(){
+            this.score = 0;
+        }
+
+        Score.prototype.add = function(num){
+            this.score += num;
+        }
+
+        Score.prototype.minus = function(num){
+            this.score -= num;
+        }
+
+        Score.prototype.getValue = function(num){
+            return this.score;
+        }
+
+
+
+        function cache(){
+            if (!this.cacheCanvas) {
+                this.cacheCanvas = document.createElement("canvas");
+                this.cacheCanvas.width = canvas.width;
+                this.cacheCanvas.height = canvas.height;
+            }
+            return this.cacheCanvas;
+        }
+
+        window.requestAnimFrame = (function(){
+            return  window.requestAnimationFrame       || 
+                    window.webkitRequestAnimationFrame || 
+                    window.mozRequestAnimationFrame    || 
+                    window.oRequestAnimationFrame      || 
+                    window.msRequestAnimationFrame     || 
+                    function( callback ){
+                        window.setTimeout(callback, 1000 / 60);
+                    };
+        })();
+
+        init()
+    </script>
+</body>
+</html>
