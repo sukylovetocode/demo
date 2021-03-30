@@ -27,13 +27,13 @@ BG.src = '/custom/img/act/act210120/pickPeachBg.jpg';
 const Monkey = new Image();
 Monkey.src = '/custom/img/act/act210120/people.png';
 const SOUND_BG = new Audio();
-SOUND_BG.src =  'https://founq.oss-cn-shanghai.aliyuncs.com/video/yanghouziH5/peach%20beijing';
+SOUND_BG.src =  '';
 SOUND_BG.addEventListener('ended', function() {
     this.currentTime = 0;
     this.play();
 }, false);
 const SOUND_PEACH = new Audio();
-SOUND_PEACH.src = "https://founq.oss-cn-shanghai.aliyuncs.com/video/yanghouziH5/peach%20yinxiao2.mp3";
+SOUND_PEACH.src = "";
 const musicBtn = new Image();
 musicBtn.src = '/custom/img/act/act210120/music.png';
 const musicStopBtn = new Image();
